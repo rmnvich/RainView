@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+
+    <color name="colorRainDefault">#66FFFFFF</color>
+
+    <color name="colorDropStartGradient">#0DFFFFFF</color>
+    <color name="colorDropEndGradient">#4DFFFFFF</color>
+
+    <color name="colorStartBackground">#2A2E3A</color>
+    <color name="colorEndBackground">#0F0D18</color>
+</resources>
