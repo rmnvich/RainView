@@ -59,6 +59,43 @@ class RainView : View {
         }
     }
 
+    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        super.onLayout(changed, left, top, right, bottom)
+        initRain()
+    }
+
+    override fun onDraw(canvas: Canvas?) {
+        if (canvas == null) return
+
+        rain.forEachIndexed { dropIndex, drop ->
+            canvas.drawLine(
+                drop.x,
+                drop.y,
+                drop.x,
+                drop.y + context.dpToPx(drop.height),
+                rainPaints[dropIndex]
+            )
+        }
+    }
+
+    fun getRainIntensity(): Int = rainIntensity
+
+    fun setRainIntensity(intensity: Int) {
+        rainIntensity = intensity
+        clearRain()
+
+        requestLayout()
+    }
+
+    private fun clearRain() {
+        for (animator in rainAnimators) {
+            animator.removeAllUpdateListeners()
+        }
+        (rainAnimators as ArrayList).clear()
+        (rainPaints as ArrayList).clear()
+        (rain as ArrayList).clear()
+    }
+
     private fun initRain() {
         for (dropIndex in 0 until rainIntensity) {
             val drop = getDrop()
@@ -77,25 +114,6 @@ class RainView : View {
     private fun startAnimation(dropIndex: Int) {
         rainAnimators[dropIndex].cancel()
         rainAnimators[dropIndex].start()
-    }
-
-    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-        super.onLayout(changed, left, top, right, bottom)
-        initRain()
-    }
-
-    override fun onDraw(canvas: Canvas?) {
-        if (canvas == null) return
-
-        rain.forEachIndexed { dropIndex, drop ->
-            canvas.drawLine(
-                drop.x,
-                drop.y,
-                drop.x,
-                drop.y + context.dpToPx(drop.height),
-                rainPaints[dropIndex]
-            )
-        }
     }
 
     private fun getDrop(): Drop {
@@ -160,13 +178,13 @@ class RainView : View {
     companion object {
         private const val DEFAULT_RAIN_INTENSITY = 200
 
-        private const val DEFAULT_MIN_DROP_WIDTH = 3
-        private const val DEFAULT_MAX_DROP_WIDTH = 7
+        private const val DEFAULT_MIN_DROP_WIDTH = 4
+        private const val DEFAULT_MAX_DROP_WIDTH = 6
 
-        private const val DEFAULT_MIN_DROP_HEIGHT = 4
+        private const val DEFAULT_MIN_DROP_HEIGHT = 8
         private const val DEFAULT_MAX_DROP_HEIGHT = 16
 
-        private const val DEFAULT_MIN_DROP_SPEED = 400
+        private const val DEFAULT_MIN_DROP_SPEED = 500
         private const val DEFAULT_MAX_DROP_SPEED = 1200
     }
 }
