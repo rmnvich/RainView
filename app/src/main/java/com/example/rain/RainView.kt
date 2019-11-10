@@ -3,9 +3,7 @@ package com.example.rain
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.LinearGradient
 import android.graphics.Paint
-import android.graphics.Shader
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.LinearInterpolator
@@ -105,7 +103,7 @@ class RainView : View {
             val drop = getDrop()
             (rain as ArrayList).add(dropIndex, drop)
 
-            val dropPaint = getDropPaint(drop.width, drop.height)
+            val dropPaint = getDropPaint(drop.width)
             (rainPaints as ArrayList).add(dropPaint)
 
             val dropAnimator = getDropValueAnimator(dropIndex)
@@ -149,22 +147,12 @@ class RainView : View {
         return Drop(x, width, height, speed)
     }
 
-    private fun getDropPaint(width: Float, height: Float): Paint {
-        val shader = LinearGradient(
-            0F,
-            0F,
-            0F,
-            height * 4,
-            ContextCompat.getColor(context, R.color.colorDropStartGradient),
-            ContextCompat.getColor(context, R.color.colorDropEndGradient),
-            Shader.TileMode.MIRROR
-        )
-
+    private fun getDropPaint(width: Float): Paint {
         return Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = ContextCompat.getColor(context, R.color.colorDropEndGradient)
             strokeCap = Paint.Cap.ROUND
             style = Paint.Style.FILL
             strokeWidth = width
-            setShader(shader)
         }
     }
 
@@ -178,7 +166,6 @@ class RainView : View {
             }
             interpolator = LinearInterpolator()
             repeatCount = ValueAnimator.INFINITE
-            repeatMode = ValueAnimator.RESTART
             duration = rain[dropIndex].speed
             startDelay = getRandomDropSpeed()
         }
