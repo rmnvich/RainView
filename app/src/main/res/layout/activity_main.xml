@@ -13,6 +13,20 @@
         android:layout_gravity="center"
         app:rainIntensity="100" />
 
+    <androidx.appcompat.widget.AppCompatSeekBar
+        android:id="@+id/rainIntensitySeekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_vertical"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:alpha="0.7"
+        android:max="500"
+        android:progressTint="@color/colorDropEndGradient"
+        android:thumbTint="@android:color/white"
+        app:tickMarkTint="@android:color/white" />
+
     <TextView
         android:id="@+id/weatherTextView"
         android:layout_width="wrap_content"
@@ -38,18 +52,4 @@
         android:textColor="@android:color/white"
         android:textSize="16sp"
         tools:ignore="HardcodedText" />
-
-    <androidx.appcompat.widget.AppCompatSeekBar
-        android:id="@+id/rainIntensitySeekBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_vertical"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp"
-        android:alpha="0.7"
-        android:max="500"
-        android:progressTint="@color/colorDropEndGradient"
-        android:thumbTint="@android:color/white"
-        app:tickMarkTint="@android:color/white" />
 </FrameLayout>

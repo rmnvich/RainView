@@ -17,15 +17,14 @@ class MainActivity : AppCompatActivity() {
     private fun prepareSeekBar() {
         rainIntensitySeekBar.progress = rainView.getRainIntensity()
         rainIntensitySeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, from: Boolean) = Unit
-            override fun onStartTrackingTouch(seekBar: SeekBar?) = Unit
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                val progress = seekBar?.progress!!
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, from: Boolean) {
                 if (progress != rainView.getRainIntensity()) {
                     rainView.setRainIntensity(progress)
                     handleWeatherTextView(progress)
                 }
             }
+            override fun onStartTrackingTouch(seekBar: SeekBar?) = Unit
+            override fun onStopTrackingTouch(seekBar: SeekBar?) = Unit
         })
     }
 

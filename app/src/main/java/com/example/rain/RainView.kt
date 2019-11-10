@@ -10,8 +10,10 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.animation.LinearInterpolator
 import androidx.core.content.ContextCompat
+import kotlin.math.abs
 import kotlin.random.Random
 
+//TODO: Fix memory leaks (ValueAnimator UpdateListener?)
 class RainView : View {
 
     private data class Drop(
@@ -61,7 +63,11 @@ class RainView : View {
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
-        initRain()
+
+        //Init rain
+        if (rain.isEmpty()) {
+            addDrops(rainIntensity)
+        }
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -81,25 +87,23 @@ class RainView : View {
     fun getRainIntensity(): Int = rainIntensity
 
     fun setRainIntensity(intensity: Int) {
-        rainIntensity = intensity
-        clearRain()
+        if (intensity != 0) {
+            val dropDifference = abs(rainIntensity - intensity)
+            if (rainIntensity < intensity) {
+                addDrops(dropDifference)
+            } else {
+                removeDrops(dropDifference)
+            }
+        } else clearRain()
 
+        rainIntensity = intensity
         requestLayout()
     }
 
-    private fun clearRain() {
-        for (animator in rainAnimators) {
-            animator.removeAllUpdateListeners()
-        }
-        (rainAnimators as ArrayList).clear()
-        (rainPaints as ArrayList).clear()
-        (rain as ArrayList).clear()
-    }
-
-    private fun initRain() {
-        for (dropIndex in 0 until rainIntensity) {
+    private fun addDrops(dropCount: Int) {
+        for (dropIndex in rain.size until rain.size + dropCount) {
             val drop = getDrop()
-            (rain as ArrayList).add(drop)
+            (rain as ArrayList).add(dropIndex, drop)
 
             val dropPaint = getDropPaint(drop.width, drop.height)
             (rainPaints as ArrayList).add(dropPaint)
@@ -109,6 +113,27 @@ class RainView : View {
 
             startAnimation(dropIndex)
         }
+    }
+
+    private fun removeDrops(dropCount: Int) {
+        for (dropIndex in rainAnimators.lastIndex downTo rainAnimators.lastIndex - dropCount) {
+            if (dropIndex < 0) break
+
+            rainAnimators[dropIndex].removeAllUpdateListeners()
+
+            (rainAnimators as ArrayList).removeAt(dropIndex)
+            (rainPaints as ArrayList).removeAt(dropIndex)
+            (rain as ArrayList).removeAt(dropIndex)
+        }
+    }
+
+    private fun clearRain() {
+        for (animator in rainAnimators) {
+            animator.removeAllUpdateListeners()
+        }
+        (rainAnimators as ArrayList).clear()
+        (rainPaints as ArrayList).clear()
+        (rain as ArrayList).clear()
     }
 
     private fun startAnimation(dropIndex: Int) {
