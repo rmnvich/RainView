@@ -8,18 +8,16 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.animation.LinearInterpolator
 import androidx.core.content.ContextCompat
-import kotlin.math.abs
 import kotlin.random.Random
 
-//TODO: Fix memory leaks (ValueAnimator UpdateListener?)
 class RainView : View {
 
     private data class Drop(
-        val x: Float,
         val width: Float,
         val height: Float,
         val speed: Long
     ) {
+        var x: Float = 0F
         var y: Float = -100F
     }
 
@@ -64,7 +62,7 @@ class RainView : View {
 
         //Init rain
         if (rain.isEmpty()) {
-            addDrops(rainIntensity)
+            addDrops(0, rainIntensity)
         }
     }
 
@@ -86,11 +84,10 @@ class RainView : View {
 
     fun setRainIntensity(intensity: Int) {
         if (intensity != 0) {
-            val dropDifference = abs(rainIntensity - intensity)
             if (rainIntensity < intensity) {
-                addDrops(dropDifference)
+                addDrops(rainIntensity, intensity)
             } else {
-                removeDrops(dropDifference)
+                removeDrops(rainIntensity - 1, intensity)
             }
         } else clearRain()
 
@@ -98,8 +95,8 @@ class RainView : View {
         requestLayout()
     }
 
-    private fun addDrops(dropCount: Int) {
-        for (dropIndex in rain.size until rain.size + dropCount) {
+    private fun addDrops(from: Int, to: Int) {
+        for (dropIndex in from until to) {
             val drop = getDrop()
             (rain as ArrayList).add(dropIndex, drop)
 
@@ -113,9 +110,8 @@ class RainView : View {
         }
     }
 
-    private fun removeDrops(dropCount: Int) {
-        for (dropIndex in rainAnimators.lastIndex downTo rainAnimators.lastIndex - dropCount) {
-            if (dropIndex < 0) break
+    private fun removeDrops(from: Int, to: Int) {
+        for (dropIndex in from downTo to) {
 
             rainAnimators[dropIndex].removeAllUpdateListeners()
 
@@ -140,11 +136,15 @@ class RainView : View {
     }
 
     private fun getDrop(): Drop {
-        val x = getRandomDropXCoordinate()
         val width = getRandomDropWidth()
         val height = getRandomDropHeight()
         val speed = getRandomDropSpeed()
-        return Drop(x, width, height, speed)
+        val drop = Drop(width, height, speed)
+
+        val x = getRandomDropXCoordinate()
+        drop.x = x
+
+        return drop
     }
 
     private fun getDropPaint(width: Float): Paint {
@@ -159,8 +159,8 @@ class RainView : View {
     private fun getDropValueAnimator(dropIndex: Int): ValueAnimator {
         return ValueAnimator.ofInt(0, measuredHeight).apply {
             addUpdateListener { valueAnimator ->
-                val newYCoordinate = valueAnimator.animatedValue as Int
-                rain[dropIndex].y = newYCoordinate.toFloat()
+                val newYCoordinate = (valueAnimator.animatedValue as Int).toFloat()
+                rain[dropIndex].y = newYCoordinate
 
                 invalidate()
             }
@@ -190,11 +190,11 @@ class RainView : View {
     companion object {
         private const val DEFAULT_RAIN_INTENSITY = 200
 
-        private const val DEFAULT_MIN_DROP_WIDTH = 4
-        private const val DEFAULT_MAX_DROP_WIDTH = 6
+        private const val DEFAULT_MIN_DROP_WIDTH = 1
+        private const val DEFAULT_MAX_DROP_WIDTH = 2
 
-        private const val DEFAULT_MIN_DROP_HEIGHT = 8
-        private const val DEFAULT_MAX_DROP_HEIGHT = 16
+        private const val DEFAULT_MIN_DROP_HEIGHT = 20
+        private const val DEFAULT_MAX_DROP_HEIGHT = 60
 
         private const val DEFAULT_MIN_DROP_SPEED = 500
         private const val DEFAULT_MAX_DROP_SPEED = 1200
