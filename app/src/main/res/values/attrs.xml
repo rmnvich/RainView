@@ -2,6 +2,7 @@
 <resources>
     <declare-styleable name="RainView">
         <attr name="rainIntensity" format="integer" />
+        <attr name="rainAngle" format="integer" />
         <attr name="rainColor" format="color" />
     </declare-styleable>
 </resources>

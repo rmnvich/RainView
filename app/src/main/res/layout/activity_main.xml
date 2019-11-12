@@ -6,13 +6,6 @@
     android:layout_height="match_parent"
     android:background="@drawable/background">
 
-    <com.example.rain.RainView
-        android:id="@+id/rainView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        app:rainIntensity="100" />
-
     <androidx.appcompat.widget.AppCompatSeekBar
         android:id="@+id/rainIntensitySeekBar"
         android:layout_width="match_parent"
@@ -20,12 +13,52 @@
         android:layout_gravity="bottom|center_vertical"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="75dp"
         android:alpha="0.7"
         android:max="500"
         android:progressTint="@color/colorDropEndGradient"
         android:thumbTint="@android:color/white"
         app:tickMarkTint="@android:color/white" />
+
+    <TextView
+        android:id="@+id/intensityTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="100dp"
+        android:alpha="0.85"
+        android:fontFamily="sans-serif-thin"
+        android:text="Rain intensity"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        tools:ignore="HardcodedText" />
+
+    <androidx.appcompat.widget.AppCompatSeekBar
+        android:id="@+id/rainAngleSeekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_vertical"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:alpha="0.7"
+        android:max="25"
+        android:progressTint="@color/colorDropEndGradient"
+        android:thumbTint="@android:color/white"
+        app:tickMarkTint="@android:color/white" />
+
+    <TextView
+        android:id="@+id/angleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="45dp"
+        android:alpha="0.85"
+        android:fontFamily="sans-serif-thin"
+        android:text="Rain angle"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        tools:ignore="HardcodedText" />
 
     <TextView
         android:id="@+id/weatherTextView"
@@ -40,16 +73,11 @@
         android:textSize="55sp"
         tools:ignore="HardcodedText" />
 
-    <TextView
-        android:id="@+id/intensityTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="45dp"
-        android:alpha="0.85"
-        android:fontFamily="sans-serif-thin"
-        android:text="Rain intensity"
-        android:textColor="@android:color/white"
-        android:textSize="16sp"
-        tools:ignore="HardcodedText" />
+    <com.example.rain.RainView
+        android:id="@+id/rainView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        app:rainAngle="0"
+        app:rainIntensity="250" />
 </FrameLayout>

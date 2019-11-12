@@ -1,8 +1,8 @@
 package com.example.rain
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
-import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -11,21 +11,30 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        prepareSeekBar()
+        prepareIntensitySeekBar()
+        prepareAngleSeekBar()
     }
 
-    private fun prepareSeekBar() {
+    private fun prepareIntensitySeekBar() {
         rainIntensitySeekBar.progress = rainView.getRainIntensity()
-        rainIntensitySeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, from: Boolean) {
-                if (progress != rainView.getRainIntensity()) {
-                    rainView.setRainIntensity(progress)
-                    handleWeatherTextView(progress)
-                }
+        rainIntensitySeekBar.setOnProgressChangeListener { progress ->
+            if (progress != rainView.getRainIntensity()) {
+                rainView.setRainIntensity(progress)
+                handleWeatherTextView(progress)
             }
-            override fun onStartTrackingTouch(seekBar: SeekBar?) = Unit
-            override fun onStopTrackingTouch(seekBar: SeekBar?) = Unit
-        })
+        }
+    }
+
+    private fun prepareAngleSeekBar() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            rainAngleSeekBar.min = -25
+        }
+        rainAngleSeekBar.progress = rainView.getRainAngle()
+        rainAngleSeekBar.setOnProgressChangeListener { progress ->
+            if (progress != rainView.getRainAngle()) {
+                rainView.setRainAngle(progress)
+            }
+        }
     }
 
     @SuppressLint("SetTextI18n")

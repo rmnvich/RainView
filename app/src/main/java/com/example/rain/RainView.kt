@@ -8,6 +8,8 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.animation.LinearInterpolator
 import androidx.core.content.ContextCompat
+import kotlin.math.sin
+import kotlin.math.tan
 import kotlin.random.Random
 
 class RainView : View {
@@ -18,7 +20,7 @@ class RainView : View {
         val speed: Long
     ) {
         var x: Float = 0F
-        var y: Float = -100F
+        var y: Float = -DEFAULT_MAX_DROP_HEIGHT.toFloat()
     }
 
     private val rain: List<Drop> = ArrayList()
@@ -27,6 +29,7 @@ class RainView : View {
     private val rainAnimators: List<ValueAnimator> = ArrayList()
 
     private var rainIntensity: Int = 0
+    private var rainAngle: Int = 0
 
     constructor(context: Context?) : super(context) {
         initView(null)
@@ -51,6 +54,9 @@ class RainView : View {
             rainIntensity =
                 typedArray.getInt(R.styleable.RainView_rainIntensity, getDefaultRainIntensity())
 
+            rainAngle =
+                typedArray.getInt(R.styleable.RainView_rainAngle, getDefaultRainAngle())
+
             typedArray.recycle()
         } else {
             rainIntensity = getDefaultRainIntensity()
@@ -70,14 +76,17 @@ class RainView : View {
         if (canvas == null) return
 
         rain.forEachIndexed { dropIndex, drop ->
-            canvas.drawLine(
-                drop.x,
-                drop.y,
-                drop.x,
-                drop.y + context.dpToPx(drop.height),
-                rainPaints[dropIndex]
-            )
+            val stopY = drop.y + context.dpToPx(drop.height)
+            val stopX = tan(rainAngle.toFloat().degToRad()) * context.dpToPx(drop.height) + drop.x
+
+            canvas.drawLine(drop.x, drop.y, stopX, stopY, rainPaints[dropIndex])
         }
+    }
+
+    fun getRainAngle(): Int = rainAngle
+
+    fun setRainAngle(angle: Int) {
+        rainAngle = angle
     }
 
     fun getRainIntensity(): Int = rainIntensity
@@ -157,10 +166,20 @@ class RainView : View {
     }
 
     private fun getDropValueAnimator(dropIndex: Int): ValueAnimator {
-        return ValueAnimator.ofInt(0, measuredHeight).apply {
+        return ValueAnimator.ofInt(-DEFAULT_MAX_DROP_HEIGHT, measuredHeight).apply {
             addUpdateListener { valueAnimator ->
                 val newYCoordinate = (valueAnimator.animatedValue as Int).toFloat()
+                val newXCoordinate = rain[dropIndex].x +
+                        sin(rainAngle.toFloat().degToRad()) *
+                        (measuredHeight.toFloat() / duration.toFloat()) *
+                        (newYCoordinate - rain[dropIndex].y)
+
                 rain[dropIndex].y = newYCoordinate
+
+                //FIXME: It's wrong
+                if (newXCoordinate > 0 && newXCoordinate < measuredWidth) {
+                    rain[dropIndex].x = newXCoordinate
+                } else rain[dropIndex].x = getRandomDropXCoordinate()
 
                 invalidate()
             }
@@ -183,12 +202,16 @@ class RainView : View {
         (DEFAULT_MAX_DROP_SPEED - DEFAULT_MIN_DROP_SPEED) + 1
     ) + DEFAULT_MIN_DROP_SPEED).toLong()
 
+    //TODO: Generate X with dependency with angle
     private fun getRandomDropXCoordinate() = Random.nextInt(measuredWidth).toFloat()
 
     private fun getDefaultRainIntensity() = DEFAULT_RAIN_INTENSITY
 
+    private fun getDefaultRainAngle() = DEFAULT_RAIN_ANGLE
+
     companion object {
         private const val DEFAULT_RAIN_INTENSITY = 200
+        private const val DEFAULT_RAIN_ANGLE = 5
 
         private const val DEFAULT_MIN_DROP_WIDTH = 1
         private const val DEFAULT_MAX_DROP_WIDTH = 2
